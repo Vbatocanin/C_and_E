@@ -7,11 +7,10 @@ When designing a completely new algorithm, a very thorough analysis of it's **co
 In this article we will be talking about the following subjects:
 
 - [Mathematical Induction](#mathematicalinduction)
-
 - [Proof Of Correctness](#proofofcorrectness)
-- [Example: Loop Invariants](#exampleloopinvariants)
 - [Recurrence Relations: Linear and Non-Linear](#recurrencerelationslinearandnonlinear)
 - [Solving Homogeneous Linear Recurrence Relations](#solvinghomogeneouslinearrecurrencerelations)
+- [Loop Invariants](#loopinvariants)
 - [Computer Science Master Theorem](#computersciencemastertheorem)
 - [Example: Dynamic Programming](#exampledynamicprogramming)
 - [Example: Binary Search](#examplebinarysearch)
@@ -22,13 +21,141 @@ In this article we will be talking about the following subjects:
 
 ### Mathematical Induction
 
-Because I have the sneaking suspicion that a lot of you don't know the first thing about proving theorems, I'll 
+`Mathematical induction`(MI) is an essential tool to proving the statement that proves an algorithm's correctness. The general idea of MI is to prove that a statement is true for every natural number `n`. What does this actually mean?
+
+This means we have to go through 3 steps:
+
+1. **Induction Hypothesis**: Define the rule we want to prove for every `n`, let's call the rule `F(n)`
+2. **Induction base**: Proving the rule is valid for a initial value, or rather a starting point
+   - this is often proven by solving the Induction Hypothesis `F(n)` for n=1 or whatever initial value is appropriate
+3. **Induction step**: Proving that if we know that `F(n)` is true, we can `step` one step forward and assume `F(n+1)` is correct
+
+If you followed these steps, **CONGRATULATIONS**, now have the power to loop! No, really, this basically gives us the ability to do the following:
+
+```python
+for(i in range(n)):
+    T[i]=True
+```
+
+#### Basic Example
+
+**Problem**:
+
+> If we define S(n) as the sum of the first n natural numbers, for example S(3) = 3+2+1, prove that the following formula can be applied to any n:
+> $$
+> S(n)=\frac{(n+1)*n}{2}
+> $$
+
+Let's trace our steps:
+
+1. **Induction Hypothesis**: S(n) defined with the formula above
+
+2. **Induction base**: In this step we have to prove that S(1) = 1:
+   $$
+   S(1)=\frac{(1+1)*1}{2}=\frac{2}{2}=1
+   $$
+
+3. **Induction step**: In this step we need to prove that if the formula applies to S(n), it also applies to S(n+1) as follows:
+$$
+S(n+1)=\frac{(n+1+1)*(n+1)}{2}=\frac{(n+2)*(n+1)}{2}
+$$
+
+This is known as an **implication** (a=>b), which just means that we have to prove `b` is correct providing we know `a` is correct.
+$$
+S(n+1)=S(n)+(n+1)=\frac{(n+1)*n}{2}+(n+1)=\frac{n^2+n+2n+2}{2}
+$$
+
+$$
+=\frac{n^2+3n+2}{2}=\frac{(n+2)*(n+1)}{2}
+$$
+
+Q.E.D.
 
 ### Proof Of Correctness 
 
-### Example: Loop Invariants
+Because the method we are using to prove an algorithm's correctness is math based, or rather **function based**, the more the solution is similar to a real mathematic function, the easier the proof.
+
+Why is this you may ask? Well, practical imperative programming has this thing called a **state**, this means a program's output is dependent on 3 things:
+
+1. Its sequence of instructions
+
+2. Its input values
+
+3. its **state**, or rather, all previously initialized variables that can in any way change the output value
+
+    
+
+#### Program State Example
+
+```python
+def foo(x):
+	x = y+1
+	return x
+```
+
+If I asked you to give me the output value of this function for x=1, naturally you would say:
+
+> Well gee golly sir, how would we know the output value if we don't know that gosh darn y value. 
+
+You see, that's exactly the point, this (imperative) program as any other has a **state**, which is defined by a list of variables and their corresponding values. Only then is this program's output truly **deterministic**.
+
+> `Deterministic` - a system with no random factors
+
+This opens up a whole new story about programming paradigms that have a completely transparent state, or in other words, have **NO VARIABLES**. This might seem insane, but it does exist, and it is semi-frequently used, especially **functional programming in Haskell**.
+
+But because we don't traditionally have functional concepts at our disposal in imperative programming, we settle for next best thing for proving correctness, **recursion**. Recursion is very easy for math interpretation because it's equivalent to recurrence relations.
+
+#### Recursion Example
+
+```python
+def factorial(n):
+    if(n==0):
+        return 1
+    else:
+        return n*factorial(n-1)
+```
+
+Converted to recurrence form:
+$$
+Factorial(n)=n*Factorial(n-1)
+$$
 
 ### Recurrence Relations: Linear and Non-Linear
+
+
+
+### Loop Invariants
+
+This all sounds fine and dandy, but up until now, we haven't said anything about representing loops and program states as math formulas. Loops pose a problem because there are very few mathematical equivalents to loops, the simplest one being mathematical induction.
+
+Also, variables pose a problem because all of them need to be kept in check all the time, just in case one goes haywire. This means we have to incorporate **mathematical induction** into our `Algorithm Analysis Model`. 
+
+The simplest way of solving both problems is **Loop invariants** .
+
+> A loop invariant is a logic formula, or just a set of rules, that is true before, during and after the loop in question. It is imperative for it to contain rules for all the variables that occur in said loop, because we need to **BIND** them all to the set of values we want them to be.
+
+#### Loop Invariant Selection
+
+A loop invariant can be as complicated and as simple as you want it to be. However the point is that it should be constructed to resemble the problem at hand as closely as possible.
+
+For example, I can always say that the following is a loop invariant:
+
+
+$$
+(x>y)\or(x<y)\or(x==y)
+$$
+
+But, by using a `tautology` (a logic formula that is always correct) as a loop invariant, we don't really achieve anything, the only reason it is technically classifies as a loop invariant is it fits all 3 requirements:
+
+1. The formula is correct BEFORE loop execution
+
+2. The formula is correct DURING loop execution, including all the steps inbetween
+
+3. The formula is correct AFTER loop execution
+
+
+
+    
 
 ### Solving Homogeneous Linear Recurrence Relations
 
