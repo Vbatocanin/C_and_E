@@ -8,25 +8,25 @@ In this article we will be talking about the following subjects:
 
 - [Mathematical Induction](#mathematicalinduction)
 - [Proof Of Correctness](#proofofcorrectness)
+- [Loop Invariants](#loopinvariants)
 - [Recurrence Relations: Linear and Non-Linear](#recurrencerelationslinearandnonlinear)
 - [Solving Homogeneous Linear Recurrence Relations](#solvinghomogeneouslinearrecurrencerelations)
-- [Loop Invariants](#loopinvariants)
 - [Computer Science Master Theorem](#computersciencemastertheorem)
 - [Example: Dynamic Programming](#exampledynamicprogramming)
 - [Example: Binary Search](#examplebinarysearch)
 
 
 
-**FAIR WARNING**: as you can see from the section titles, this is not in any shape or form meant for direct application, this is pure `Computer Science Theory`, and is only meant for deeper understanding of certain fields of practical programming.
+**DISCLAIMER**: as you can see from the section titles, this is not in any way, shape or form meant for direct application, this is pure `Computer Science Theory`, and is only meant for a deeper understanding of certain fields of practical programming.
 
 ### Mathematical Induction
 
-`Mathematical induction`(MI) is an essential tool to proving the statement that proves an algorithm's correctness. The general idea of MI is to prove that a statement is true for every natural number `n`. What does this actually mean?
+`Mathematical induction`(MI) is an essential tool for proving the statement that proves an algorithm's correctness. The general idea of MI is to prove that a statement is true for every natural number `n`. What does this actually mean?
 
 This means we have to go through 3 steps:
 
 1. **Induction Hypothesis**: Define the rule we want to prove for every `n`, let's call the rule `F(n)`
-2. **Induction base**: Proving the rule is valid for a initial value, or rather a starting point
+2. **Induction base**: Proving the rule is valid for an initial value, or rather a starting point
    - this is often proven by solving the Induction Hypothesis `F(n)` for n=1 or whatever initial value is appropriate
 3. **Induction step**: Proving that if we know that `F(n)` is true, we can `step` one step forward and assume `F(n+1)` is correct
 
@@ -56,6 +56,7 @@ Let's trace our steps:
    $$
 
 3. **Induction step**: In this step we need to prove that if the formula applies to S(n), it also applies to S(n+1) as follows:
+
 $$
 S(n+1)=\frac{(n+1+1)*(n+1)}{2}=\frac{(n+2)*(n+1)}{2}
 $$
@@ -69,7 +70,11 @@ $$
 =\frac{n^2+3n+2}{2}=\frac{(n+2)*(n+1)}{2}
 $$
 
-Q.E.D.
+> Note that S(n+1) = S(n) + (n+1) just means we are recursively calculating the sum. Example with literals: 
+>
+> S(3) = S(2) + 3= S(1) + 2 + 3 = 1 + 2 + 3 = 6
+
+**Q.E.D.**
 
 ### Proof Of Correctness 
 
@@ -95,7 +100,7 @@ def foo(x):
 
 If I asked you to give me the output value of this function for x=1, naturally you would say:
 
-> Well gee golly sir, how would we know the output value if we don't know that gosh darn y value. 
+> Well golly gee sir, how would we know the output value if we don't know that gosh darn y value. 
 
 You see, that's exactly the point, this (imperative) program as any other has a **state**, which is defined by a list of variables and their corresponding values. Only then is this program's output truly **deterministic**.
 
@@ -120,50 +125,92 @@ $$
 Factorial(n)=n*Factorial(n-1)
 $$
 
-### Recurrence Relations: Linear and Non-Linear
-
-
-
 ### Loop Invariants
 
-This all sounds fine and dandy, but up until now, we haven't said anything about representing loops and program states as math formulas. Loops pose a problem because there are very few mathematical equivalents to loops, the simplest one being mathematical induction.
+This all sounds fine and dandy, but up until now, we haven't said anything about representing loops and program states as math formulas. Variables in a program's state pose a problem because all of them need to be kept in check all the time, just in case one goes haywire. 
 
-Also, variables pose a problem because all of them need to be kept in check all the time, just in case one goes haywire. This means we have to incorporate **mathematical induction** into our `Algorithm Analysis Model`. 
+Also, loops pose a problem because there are very few mathematical equivalents to them. This means we have to incorporate **mathematical induction** into our `Algorithm Analysis Model`, because it's the only method we know that can iteratively incriminate values in math, like in actual code. 
 
-The simplest way of solving both problems is **Loop invariants** .
+The simplest way of solving both problems (with mathematical induction) is **Loop invariants**.
 
-> A loop invariant is a logic formula, or just a set of rules, that is true before, during and after the loop in question. It is imperative for it to contain rules for all the variables that occur in said loop, because we need to **BIND** them all to the set of values we want them to be.
+> A loop invariant is a logic formula or just a set of rules, that is true before, during and after the loop in question (so it's unbiased to iteration). It is imperative for it to contain rules for all the variables that occur in the said loop because we need to **BIND** them all to the set of values we want them to be.
 
 #### Loop Invariant Selection
 
-A loop invariant can be as complicated and as simple as you want it to be. However the point is that it should be constructed to resemble the problem at hand as closely as possible.
+A loop invariant can be as complicated and as simple as you want it to be. However, the point is that it should be constructed to resemble the problem at hand as closely as possible.
 
 For example, I can always say that the following is a loop invariant:
-
-
 $$
 (x>y)\or(x<y)\or(x==y)
 $$
-
-But, by using a `tautology` (a logic formula that is always correct) as a loop invariant, we don't really achieve anything, the only reason it is technically classifies as a loop invariant is it fits all 3 requirements:
+But, by using a `tautology` (a logic formula that is always correct) as a loop invariant, we don't really achieve anything, the only reason it is technically classified as a loop invariant is it fits all 3 requirements:
 
 1. The formula is correct BEFORE loop execution
-
-2. The formula is correct DURING loop execution, including all the steps inbetween
-
+2. The formula is correct DURING loop execution, including all the steps in between
 3. The formula is correct AFTER loop execution
 
+#### Example: 
 
+Let's take a look at the following code and determine the optimal loop invariant:
 
-    
+```python
+x = 10
+y = 4
+z = 0
+n = 0
+while(n < x):
+    z = z+y
+    n = n+1
+```
+
+Logically, this code just calculates the value x\*y and stores it in z, this means that `z = x*y`. Another condition we know will always be true is `n <= x` (more on the equals in the example). But do these two really only apply after the program is done computing? 
+
+The `n` value is essentially the number of loops that were already executed, but also, it's the number of times that the `z` value has been increased by `y`. So this means that both `z = n*y` **and** `n <= x` might apply **at all times**. The only thing left to do is to check whether they really can be used as a loop invariant.
+
+#### Loop Invariant Example - Proof by Induction
+
+1. First, we need to prove that the loop invariant is true **before** entering the loop (which is the equivalent of proving and **induction's base**):
+
+```python
+# <=> - logical equivalency, left and right sides of the equation have the same logical value (True or False)
+# <= - less or equal (not to be confused with implication, which also looks like a arrow to the left)
+x = 10
+y = 4
+z = 0
+n = 0
+# RULE 1: z == n*y
+# 0 == 0*4 = 0 <=> True 
+# so RULE 1 applies
+
+# RULE 2: n <= x
+# 0 <= 10 <=> True
+# so RULE 2 applies, therefore the invariant is valid before entering the loop 
+```
+
+2. Second, we need to check if the invariant is true after every finished loop (excluding the last one), we do this by observing the transition from `z,n` to `z',n'`, where `z'` and `n'` are the values of `z ` and `n` after the next loop has executed. Therefore,  `z' = z+y` and `n' = n+1`. We need to essentially prove that if we know that the invariant is true for `z` and `n`, it's also true for `z'` and `n'`. 
+   
+   $$
+   z' = z+y \\
+   z = n*y\\
+   n' = n+1 \\
+   \text{If the follwing is valid, the invariant is valid: }z'=n'*y?  \\  
+   z'=(n+1)*y=n*y+y=z+y
+   $$
+   
+3. Third, we need to check if the invariant is true after the last iteration of the loop. Because `n` is an integer and we know that `n-1<x` is true, but `n<x` is false, that means that `n=x` (this is the reason why the invariant has to include `n<=x`, not `n<x`). Therefore we know that `z = x*y`.
+
+   **Q.E.D.**
+
+### Efficiency Analysis: Linear and Non-Linear Recurrence Relations
+
+When talking about algorithm 
 
 ### Solving Homogeneous Linear Recurrence Relations
 
 ### Computer Science Master Theorem
 
-### Example: Dynamic Programming
-
 ### Example: Binary Search
 
-### Conclusion
+### Example: Dynamic Programming VS Recursion
 
+### Conclusion
