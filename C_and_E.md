@@ -1,4 +1,4 @@
-## Mathematical proof of Algorithm Correctness and Efficiency
+## 	Mathematical proof of Algorithm Correctness and Efficiency
 
 ### Introduction
 
@@ -108,7 +108,7 @@ You see, that's exactly the point, this (imperative) program as any other has a 
 
 This opens up a whole new story about programming paradigms that have a completely transparent state, or in other words, have **NO VARIABLES**. This might seem insane, but it does exist, and it is semi-frequently used, especially **functional programming in Haskell**.
 
-But because we don't traditionally have functional concepts at our disposal in imperative programming, we settle for next best thing for proving correctness, **recursion**. Recursion is very easy for math interpretation because it's equivalent to recurrence relations.
+But because we don't traditionally have functional concepts at our disposal in imperative programming, we settle for next best thing for proving correctness, **recursion**. Recursion is very easy for math interpretation because it's equivalent to recurrence relations (more on recurrence relations in the following segments).
 
 #### Recursion Example
 
@@ -201,11 +201,60 @@ n = 0
 
    **Q.E.D.**
 
-### Efficiency Analysis: Linear and Non-Linear Recurrence Relations
+### Efficiency Analysis: Recurrence Relations
 
-When talking about algorithm 
+When talking about algorithm efficiency, the first thing that comes up is recurrence relations. This just means that a function such as `f(n)` is dependent on it's preceding and succeeding values, such as `f(n-1)` and `f(n+1)`.  The simplest example of this kind of function would be the Fibonacci sequence:
+
+$$
+Fibonacci(n)=Fibonacci(n-1)+Fibonacci(n-2)
+$$
+
+You might actually recognize this concept from my article on [Dynamic Programming](<https://stackabuse.com/dynamic-programming-in-java/>). And yes, the problem is very similar, however, the solving method is very different.
+
+When analyzing algorithm efficiency, there are basically two types of relations you will be solving:
+
+1. Linear homogeneous recurrence relations
+2. Non-linear recurrence relations - Master Theorem use case
+
+
 
 ### Solving Homogeneous Linear Recurrence Relations
+
+When reading the title above, you may be asking yourself `"What in the name of god is this math gibberish?!?!"`. Well, first let's take a look at the general formula:
+
+
+$$
+F(n) = a_1F(n − 1) + a_2F(n − 2) + ... + a_kF(n − k).
+$$
+
+Now let's break up the definition into byte-size pieces (pun intended):
+
+1. Linear refers to the fact that the function elements `F(something)` are to the first power
+2. Homogeneous refers to the fact that all element duplets `a*F(something)` are uniform, meaning a constant can not be present
+
+These recurrence relations are solved by using the following substitution:
+
+$$
+F(n) = r^n
+$$
+
+- `r` being a conveniently chosen (complex) number
+
+Using the above mentioned substitution, we get the `characteristic polynomial`:
+
+
+$$
+r^k − a_1r^{k−1} − a_2r^{k−2} − ... − a_k = 0
+$$
+This represents a vert convenient equation, where `r` can have `k` possible solutions (roots), also, we can represent `F(n)` as a linear combination of all of its predecessors:
+
+
+$$
+F(n) = \sum^{k}_{i=1}c_ir^{n}_{i}
+$$
+- `ci` being unknown coefficients that indicate which `r` has the most impact when calculating the value of `F(n)`
+
+
 
 ### Computer Science Master Theorem
 
