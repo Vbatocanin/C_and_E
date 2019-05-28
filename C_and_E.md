@@ -240,19 +240,46 @@ $$
 
 - `r` being a conveniently chosen (complex) number
 
-Using the above mentioned substitution, we get the `characteristic polynomial`:
+We are using a complex number because we need a variable that can cycle through a number of values, of which, preferably, all are different. **ALL OF WHICH** are roots (solutions) to the equation above. 
 
+>Clarification: 
+>
+>- `complex` numbers have a form of `x = a + bi`, x being the complex number, `a` and `b` being simple integers, and `i` being the constant 
+>  $$
+>  \begin{align}
+>  i=\sqrt{-1}
+>  \end{align}
+>  $$
+>
+>- as you can notice `i` is a very particular number, meaning it actually has a `quadric cycle`:
+>  $$
+>  \begin{align}
+>  i=\sqrt{-1}\\
+>  i^2=-1\\
+>  i^3=-1*\sqrt{-1}\\
+>  i^4=1\\
+>  i^5=i
+>  \end{align}
+>  $$
+>
+>- this means `i` has a cycle of `length = 5`
+>
+>- other complex numbers can be tailor-made to have a precise cycle, where no two elements are the same (except the starting and ending elements)
+
+Using the above mentioned substitution, we get the `characteristic polynomial`:
 
 $$
 r^k − a_1r^{k−1} − a_2r^{k−2} − ... − a_k = 0
 $$
-This represents a vert convenient equation, where `r` can have `k` possible solutions (roots), also, we can represent `F(n)` as a linear combination of all of its predecessors:
+This represents a very convenient equation, where `r` can have `k` possible solutions (roots), also, we can represent `F(n)` as a linear combination of all of its predecessors (the proof of this formula's correctness will not be shown for the sake of my sanity):
 
 
 $$
 F(n) = \sum^{k}_{i=1}c_ir^{n}_{i}
 $$
 - `ci` being unknown coefficients that indicate which `r` has the most impact when calculating the value of `F(n)`
+
+Also, if a root's value (`r` for example) does come up more than once, we say that `r` has the multiplicity (`m`) greater than 1, and....
 
 
 
