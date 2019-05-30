@@ -9,11 +9,14 @@ In this article we will be talking about the following subjects:
 - [Mathematical Induction](#mathematicalinduction)
 - [Proof Of Correctness](#proofofcorrectness)
 - [Loop Invariants](#loopinvariants)
+- [Efficiency Analysis: Recurrence Relations](#efficiencyanalysisrecurrencerelations)
+- 
 - [Recurrence Relations: Linear and Non-Linear](#recurrencerelationslinearandnonlinear)
 - [Solving Homogeneous Linear Recurrence Relations](#solvinghomogeneouslinearrecurrencerelations)
 - [Computer Science Master Theorem](#computersciencemastertheorem)
 - [Example: Dynamic Programming](#exampledynamicprogramming)
 - [Example: Binary Search](#examplebinarysearch)
+- [Conclusion](#conclusion)
 
 
 
@@ -294,69 +297,6 @@ $$
 
 Congratulations, now we can solve the most **bare bones**  recurrence equations, let's test it out.
 
-#### Example: Fibonacci Sequence
-
-**Problem**: 
-
-If we know that the Fibonacci sequence is defined with the following recurrence relation:
-$$
-Fibonacci(n)=Fibonacci(n-1)+Fibonacci(n-2)
-$$
-And if we know that `Fibonacci(0) = 0` ,`Fibonacci(1) = 1` ,determine the non-recursive form of Fibonacci(n).
-
-**Solution**:
-
-First, we need to get the implicit form of the equation (**math talk** for plonk everything on one side, so that the other side only has a zero):
-$$
-Fibonacci(n)-Fibonacci(n-1)-Fibonacci(n-2)=0
-$$
-Now, let's use the substitution (`formula (1)`):
-$$
-r^n-r^{n-1}-r^{n-2}=0 \
-$$
-To further simplify the equation, let's divide both sides with `r` to the power of the lowest power present in the equation (in this case it's `n-2`):
-$$
-r^n-r^{n-1}-r^{n-2}=0 \ /r^{n-2} \\
-r^{n-(n-2)}-r^{n-1-(n-2)}-r^{n-2-(n-2)}=0  \\
-r^{2}-r^{1}-r^{0}=0 \\
-r^{2}-r-1=0
-$$
-This step is done so that we can boil the problem down to a **quadric equation**.
-
-Using the [**quadratic equation formula **](https://www.toppr.com/guides/maths/quadratic-equations/solving-quadratic-equations/) we get the following possible values for `r`:
-$$
-r_1=\frac{1+\sqrt{5}}{2},r_1=\frac{1-\sqrt{5}}{2}
-$$
-Now, using `formula (2)`, we determine the basic formula for Fibonacci(n):
-$$
-Fibonacci(n)=C_1*r_1^n + C_2*r_2^n
-$$
-Because we know that `Fibonacci(0) = 0` and `Fibonacci(1) = 1`, we can use them to solve the equation above for C1 and C2:
-$$
-Fibonacci(0)=0=C_1*r_1^0 + C_2*r_2^0=C_1+C_2 \\
-\text{Which means: }C_1=-C_2
-$$
-
-$$
-Fibonacci(1)=1=C_1*r_1^1 + C_2*r_2^1=C_1*r_1+C_2*r_2 \\
-\text{Because we know the values of r1 and r2, and the following: }C_1=-C_2 \\
-\text{We can substitute them in the main equation: }\\
-1=-C_2*\frac{1+\sqrt{5}}{2}+C_2*\frac{1-\sqrt{5}}{2}
-$$
-When we solve the above equation for `C2` we get:
-$$
-C_1 = -\frac{1}{\sqrt{5}}\\
-C_2 = \frac{1}{\sqrt{5}}
-$$
-Which means that now we have the final solution to the recurrence relation:
-$$
-Fibonacci(n) =-\frac{1}{\sqrt{5}}*(\frac{1+\sqrt{5}}{2})^n+\frac{1}{\sqrt{5}}*(\frac{1-\sqrt{5}}{2})^n
-$$
-
-#### Deducing Algorithm Complexity From Recurrence Relation
-
-Now let's pretend that `Fibonacci(n)` represents the number of steps a program needs to calculate some value (`n` being the input value, or more commonly, input size in bits). The solution above tells us that the algorithm we are using has an [**exponential complexity**](https://stackabuse.com/big-o-notation-and-algorithm-analysis-with-python-examples/).
-
 ### Computer Science Master Theorem
 
 Remember when I said that the above were only the **bare bones** recurrence relations? Well now we'll be looking at a more complicated, but much more useful type of recurrence relation.
@@ -370,12 +310,158 @@ $$
 
 This is a **much more common** recurrence relation because it's embodies the *divide and conquer*  principle (it calculates `T(n)` by calculating a much smaller problem like `T(n/b)`) .
 
-Because the formula above is logical enough, and because the proof isn't really trivial, I would advise you to just remember it as is.... but if you still want to see the proof, read [Theorem 5.1 proof 1-2 in this article](https://www.math.dartmouth.edu/archive/m19w03/public_html/Section5-2.pdf).
+The formula we use to calculate `T(n)` in the case of this kind of recurrence relation is as follows:
+$$
+T(n) =\begin{cases}
+       O(n^{log_ba}) &\text{for } a>b^k\\
+       O(n^{k}log \ n) &\text{for } a=b^k	 \\
+       O(n^{k}) &\text{for } a<b^k\\
+     \end{cases}
+$$
+
+
+Because the formula above is **logical enough**, and because the proof isn't really trivial, I would advise you to just remember it as is.... but if you still want to see the proof, read [Theorem 5.1 proof 1-2 in this article](https://www.math.dartmouth.edu/archive/m19w03/public_html/Section5-2.pdf).
 
 
 
 ### Example: Binary Search
 
+If we have a sorted array `A` of length `n` and we want to find out how much time it would take us to find a specific element, let's call it `z` for example. First we need to take a look at the code we'll be using to find said element using Binary Search:
+
+```python
+# leftIndex and rightIndex indicate which part of the original array
+# we are currently examining, the initial function call is find(A,z,1,n)
+import math
+def find(A, z, leftIndex, rightIndex):
+    # if our search range is narrowed down to one element,
+    # we just check if it's equal to z, target being the index of the wanted element
+    # A[target]=z
+    if leftIndex == rightIndex:
+        if A[leftIndex] == z:
+            return leftIndex
+        else:
+            return -1
+    else:
+        middlePoint = math.ceil((leftIndex + rightIndex) / 2)
+        print("{} {} {}".format(leftIndex, rightIndex, middlePoint))
+        # because the array is sorted, we know that if z < X[middlePoint],
+        # we know it has to be to the left of said element, 
+        # same goes if z >= X[middlePoint] and we call
+        # find(A, z, leftIndex, middlePoint - 1)
+        # if z == A[middlePoint]:
+        #     return middlePoint
+        if z < A[middlePoint]:
+            return find(A, z, leftIndex, middlePoint - 1)
+        else:  # z >= A[middlePoint]
+            # leaving the middle point in this call is intentional
+            # because there is no middle point check
+            # except when leftIndex==rightIndex
+            return find(A, z, middlePoint, rightIndex)
+
+
+def main():
+    A = [1, 3, 5, 7, 8, 9, 12, 14, 22]
+    z = 12
+    target = find(A, z, 0, len(A))
+    print("Target index: {}".format(target))
+
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+The most time intensive part of this search is the recursion, this means that we can represent the time it takes the **Binary search algorithm** to search through an array of length `n` using the following recurrence relation:
+$$
+T(n)=T(\frac{n}{2})+1
+$$
+The `1` representing a constant operation like value checking (like `leftIndex == rightIndex`, this constant isn't really that important considering it's a great deal smaller than both `T(n)` and `T(n\b)`).
+
+From matching the master theorem basic formula with the binary search formula we know:
+$$
+a=1,b=2,c=1,k=0\\
+$$
+
+
+Using the **Master Theorem formula for T(n)** we get that:
+$$
+T(n) = O(log \ n)
+$$
+So, binary search really is more efficient than standard linear search.
+
 ### Example: Dynamic Programming VS Recursion
 
+Let's take one final look at the Fibonacci sequence (last time, I promise):
+$$
+Fibonacci(n)=Fibonacci(n-1)+Fibonacci(n-2)
+$$
+Dynamic programming, as we know from my [last article](https://stackabuse.com/dynamic-programming-in-java/) has the time complexity of `O(n)	` because it uses memoization and generates the array `linearly`, with no `look-backs` (it constructs the array from the ground up). Now lets prove that it's way more efficient to use Dynamic Programming. 
+
+#### Fibonacci Time Complexity Analysis
+
+Let's say that `T(n)` represents the time that is needed to calculate the` n-th` element of the Fibonacci sequence. Then we know that the following formula applies:
+$$
+T(n)=T(n-1)+T(n-2)
+$$
+First, we need to get the implicit form of the equation (**math talk** for plonk everything on one side, so that the other side only has a zero): 
+$$
+T(n)-T(n-1)-T(n-2)=0
+$$
+ Now, let's use the standard substitution (`formula (1)`): 
+$$
+ r^n-r^{n-1}-r^{n-2}=0 
+$$
+To further simplify the equation, let's divide both sides with `r` to the power of the lowest power present in the equation (in this case it's `n-2`):
+$$
+r^n-r^{n-1}-r^{n-2}=0 \ /r^{n-2} \\ r^{n-(n-2)}-r^{n-1-(n-2)}-r^{n-2-(n-2)}=0 \\ r^{2}-r^{1}-r^{0}=0 \\ r^{2}-r-1=0
+$$
+This step is done so that we can boil the problem down to a **quadric equation**.
+
+Using the [**quadratic equation formula **](https://www.toppr.com/guides/maths/quadratic-equations/solving-quadratic-equations/) we get the following possible values for `r`: 
+$$
+r_1=\frac{1+\sqrt{5}}{2},r_1=\frac{1-\sqrt{5}}{2}
+$$
+Now, using `formula (2)`, we determine the basic formula for Fibonacci(n): 
+$$
+T(n)=C_1*r_1^n + C_2*r_2^n
+$$
+Because we know that `Fibonacci(0) = 0` and `Fibonacci(1) = 1`, therefore  `T(0) = 0` and `T(1) = 1` (technically, `T(0)` and `T(1)` could be any constant number of operations needed to calculate their values, but it doesn't really impact the result that much, so for the sake of simplicity, they're `0` and `1`, just like `Fib(0)` and `Fib(1)` ), we can use them to solve the equation above for `C1` and `C2`: 
+$$
+T(0)=0=C_1*r_1^0 + C_2*r_2^0=C_1+C_2 \\ \text{Which means: }C_1=-C_2
+$$
+
+Them, using `T(1)`:
+
+$$
+T(1)=1=C_1*r_1^1 + C_2*r_2^1=C_1*r_1+C_2*r_2 \\ \text{Because we know the values of r1 and r2, and the following: }C_1=-C_2 \\ \text{We can substitute them in the main equation: }\ 1=-C_2*\frac{1+\sqrt{5}}{2}+C_2*\frac{1-\sqrt{5}}{2}
+$$
+
+
+
+When we solve the above equation for `C2` we get:
+$$
+C_1 = -\frac{1}{\sqrt{5}}\ C_2 = \frac{1}{\sqrt{5}}
+$$
+
+
+Which means that now we have the final solution to the recurrence relation:
+$$
+T(n) =-\frac{1}{\sqrt{5}}*(\frac{1+\sqrt{5}}{2})^n+\frac{1}{\sqrt{5}}*(\frac{1-\sqrt{5}}{2})^n
+$$
+
+#### Deducing Algorithm Complexity From Recurrence Relation
+
+Because `T(n)` represents the number of steps a program needs to calculate the `n-th` element in the sequence, `n` being also the input value, or more commonly, input size in bits. The solution above tells us that the algorithm we are using has an [**exponential complexity**](https://stackabuse.com/big-o-notation-and-algorithm-analysis-with-python-examples/).
+
+>Fun fact: 
+>
+>The method above can be used to also find the formula for calculating the definite **value** for the `n-th` element in the Fibonacci sequence (the functions would represent the **value** of the` n-th` element rather than how many operations it needs to calculate them)
+
+Because `O(a^n)` (recursive - exponential time complexity) is a much greater order of magnitude than `O(n)` (dynamic programming - linear time complexity), we now have a definitive answer **why dynamic programming is superior timewise to traditional recursion**.
+
 ### Conclusion
+
+I know that this article might seem a little redundant. But proofs of correctness and efficiency are the cornerstones of modern Computer Science Theory, and the main reason why this field keeps going forward at a rapid rate.
+
+Computer Science isn't the same thing as programming, it's just one of it's many use cases. And I think that it would be nice for people to get a better understanding of what it really is, at least solely through this article.
