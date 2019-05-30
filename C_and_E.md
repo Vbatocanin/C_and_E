@@ -319,7 +319,7 @@ T(n) =\begin{cases}
 $$
 
 
-Because the formula above is **logical enough**, and because the proof isn't really trivial, I would advise you to just remember it as is.... but if you still want to see the proof, read [Theorem 5.1 proof 1-2 in this article](https://www.math.dartmouth.edu/archive/m19w03/public_html/Section5-2.pdf).
+Because the formula above is **logical enough**, and because the proof isn't really trivial, I would advise you to just remember it as is.... but if you still want to see the proof, read [Theorem 5.1 proof 1-2 in this article](https://www.cs.cornell.edu/courses/cs3110/2012sp/lectures/lec20-master/mm-proof.pdf).
 
 
 
